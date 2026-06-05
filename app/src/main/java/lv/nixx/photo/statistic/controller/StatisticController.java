@@ -2,7 +2,7 @@ package lv.nixx.photo.statistic.controller;
 
 import lombok.AllArgsConstructor;
 import lv.nixx.photo.statistic.domain.Delta;
-import lv.nixx.photo.statistic.domain.StatisticSnapshot;
+import lv.nixx.photo.statistic.domain.StatisticSnapshotHolder;
 import lv.nixx.photo.statistic.service.DeltaService;
 import lv.nixx.photo.statistic.service.StorageService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class StatisticController {
     private final DeltaService deltaCalculator;
 
     @GetMapping("/all")
-    public Collection<StatisticSnapshot> getAllStatistics() {
+    public Collection<StatisticSnapshotHolder> getAllStatistics() {
         return storageService.getAllStatistics();
     }
 

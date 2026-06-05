@@ -50,7 +50,7 @@ public class PhotoStatisticCollector {
     public Timing collectStatistics() {
         long start = System.currentTimeMillis();
 
-        log.info("Starting to parse photos, user name:" + username);
+        log.info("Starting to parse photos, user name {}", username);
 
         String html = dataFetchService.fetchUserProfile(username);
         NavigableMap<String, Integer> pages = parsingService.parse(html);
@@ -95,12 +95,11 @@ public class PhotoStatisticCollector {
             count++;
 
             String photoId = entry.getKey();
-            int likes = entry.getValue();
 
             String photoHtml = dataFetchService.fetchPhotoDetails(photoId);
             int views = parsingService.extractViewsCount(photoHtml);
 
-            log.info("#" + count + " - " + likes + " " + views + " " + "https://35photo.pro/photo_" + photoId);
+            // log.info("#" + count + " - " + likes + " " + views + " " + "https://35photo.pro/photo_" + photoId);
 
             byId.computeIfPresent(photoId, (id, stats) -> new Statistics(id, stats.getLikes(), views));
 

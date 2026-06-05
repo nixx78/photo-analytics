@@ -3,23 +3,26 @@ package lv.nixx.photo.statistic.service;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import lv.nixx.photo.statistic.domain.StatisticSnapshot;
+import lv.nixx.photo.statistic.domain.StatisticSnapshotHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class StorageService {
 
     private static final String STATISTICS_SNAPSHOTS = "statistics.snapshots";
+    private static final Comparator<StatisticSnapshotHolder> STATISTIC_SNAPSHOT_HOLDER_COMPARATOR =   Comparator.comparing(StatisticSnapshotHolder::createdAt).reversed();
 
     FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder()
             .setDatabaseId("sandbox")
             .build();
 
-    public Collection<StatisticSnapshot> getAllStatistics() {
+    public Collection<StatisticSnapshotHolder> getAllStatistics() {
         Firestore db = firestoreOptions.getService();
 
         try {
@@ -32,11 +35,17 @@ public class StorageService {
             QuerySnapshot snapshot = future.get();
             List<QueryDocumentSnapshot> docs = snapshot.getDocuments();
 
-            List<StatisticSnapshot> result = new ArrayList<>();
+            List<StatisticSnapshotHolder> result = new ArrayList<>();
 
             for (QueryDocumentSnapshot doc : docs) {
-                result.add(doc.toObject(StatisticSnapshot.class));
+                String id = doc.getId();
+                StatisticSnapshot s = doc.toObject(StatisticSnapshot.class);
+                LocalDateTime createdAt = DateTimeUtils.toLocalDateTime(s.createdAt());
+
+                result.add(new StatisticSnapshotHolder(id, createdAt, s.statistics()));
             }
+
+            result.sort(STATISTIC_SNAPSHOT_HOLDER_COMPARATOR);
 
             return result;
 
@@ -73,6 +82,8 @@ public class StorageService {
     }
 
     public Collection<LocalDateTime> getSynchTiming() {
+
+
         return null;
     }
 }

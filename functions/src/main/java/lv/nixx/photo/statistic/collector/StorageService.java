@@ -35,8 +35,7 @@ public class StorageService {
         );
 
         try {
-            WriteResult result = docRef.set(data).get();
-            log.info("Update time [{}]", result.getUpdateTime());
+            docRef.set(data).get();
         } catch (Exception ex) {
             log.error("Error  saving statistics", ex);
         }
